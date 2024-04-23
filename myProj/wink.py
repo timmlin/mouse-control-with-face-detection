@@ -34,8 +34,8 @@ def detectWink(frame, location, ROI, eye_cascade, right=False):
     return len(eyes)>0   
 
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
 
     #Face and eye cascade classifiers from xml files
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
@@ -43,8 +43,11 @@ if __name__ == "__main__":
 
     blinkCount = 0
     cap = cv2.VideoCapture(0)
-   
+    loop = 0
     while(cv2.waitKey(10) < 0):
+
+       # start_time = time.time()
+    
         ret, img = cap.read()
 
         # Convert the rgb image to gray
@@ -76,16 +79,17 @@ if __name__ == "__main__":
             
             eyeCount = left_eye + right_eye
 
+            if eyeCount == 1:
 
-            if eyeCount == 1 and right_eye:
-                cv2.rectangle(img, (x,y), (x+w,y+h), (255, 0, 0), 2)
-                cv2.putText(img, 'Right Wink detected',(int(x+(w/8)) ,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255),2,cv2.LINE_AA)
-                moveMouse(right = True)
 
-            elif eyeCount == 1 and left_eye:
-                cv2.rectangle(img, (x,y), (x+w,y+h), (255, 0, 0), 2)
-                cv2.putText(img,'Left Wink detected',(int(x+(w/8)) ,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255),2,cv2.LINE_AA)
-                moveMouse(right = False)
+                if left_eye:
+                    cv2.rectangle(img, (x,y), (x+w,y+h), (255, 0, 0), 2)
+                    cv2.putText(img,'Left Wink detected',(int(x+(w/8)) ,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255),2,cv2.LINE_AA)
+                    moveMouse(right = False)
+                elif right_eye:
+                    cv2.rectangle(img, (x,y), (x+w,y+h), (255, 0, 0), 2)
+                    cv2.putText(img, 'Right Wink detected',(int(x+(w/8)) ,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,255,255),2,cv2.LINE_AA)
+                    moveMouse(right = True)
 
             elif eyeCount == 0:
                 
@@ -100,10 +104,11 @@ if __name__ == "__main__":
             else:
                 cv2.rectangle(img, (x,y), (x+w,y+h), (0, 255, 0), 2)
 
-
+        # end_time = time.time()
+        # elapsed_time = end_time - start_time
+        # print(f"Time taken: {elapsed_time:.2f} seconds")
         cv2.imshow("wink_detection", img)
 
 
     cap.release()
     cv2.destroyAllWindows()
-
